@@ -4,10 +4,13 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.leyou.common.pojo.PageResult;
 import com.leyou.item.mapper.BrandMapper;
+import com.leyou.item.mapper.CategoryMapper;
 import com.leyou.item.pojo.Brand;
+import com.leyou.item.pojo.Category;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import tk.mybatis.mapper.entity.Example;
 
 import java.util.List;
@@ -57,5 +60,35 @@ public class BrandService {
         PageInfo<Brand> pageInfo = new PageInfo<>(brands);
         // 包装成分页结果集返回
         return new PageResult<>(pageInfo.getTotal(), pageInfo.getList());
+    }
+
+
+    /**
+     * 新增品牌
+     *
+     * @param brand
+     * @param cids
+     */
+    @Transactional
+    public void saveBrand(Brand brand, List<Long> cids) {
+
+        // 先新增brand
+        this.brandMapper.insertSelective(brand);
+
+        // 在新增中间表
+        cids.forEach(cid -> {
+            this.brandMapper.insertBrandAndCategory(cid, brand.getId());
+        });
+    }
+
+    public boolean deleteBrand(Long id) {
+        try {
+            int x = this.brandMapper.deleteByPrimaryKey(id);
+            int y = this.brandMapper.deleteCategoryAndBrandByBrandId(id);
+        }catch (Exception e){
+            return false;
+        }
+
+        return true;
     }
 }
