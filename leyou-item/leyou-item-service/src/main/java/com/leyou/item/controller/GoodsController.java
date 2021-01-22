@@ -20,6 +20,7 @@ import java.util.List;
  * @Date: 2021/1/17 13:18
  */
 @Controller
+@RequestMapping("/goods")
 public class GoodsController {
 
     @Autowired
