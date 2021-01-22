@@ -64,6 +64,12 @@
             <artifactId>spring-boot-starter-actuator</artifactId>
         </dependency>
 
+        <!--spring security 组件-->
+<!--        <dependency>-->
+<!--            <groupId>org.springframework.boot</groupId>-->
+<!--            <artifactId>spring-boot-starter-security</artifactId>-->
+<!--        </dependency>-->
+
         <dependency>
             <groupId>com.leyou.common</groupId>
             <artifactId>leyou-common</artifactId>

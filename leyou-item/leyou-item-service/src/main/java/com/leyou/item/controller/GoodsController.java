@@ -25,6 +25,14 @@ public class GoodsController {
     @Autowired
     private GoodsService goodsService;
 
+    /**
+     * 查询spu列表并分页显示
+     * @param key
+     * @param saleable
+     * @param page
+     * @param rows
+     * @return
+     */
     @GetMapping("spu/page")
     public ResponseEntity<PageResult<SpuBo>> querySpuBoByPage(
             @RequestParam(value = "key", required = false)String key,
@@ -40,12 +48,22 @@ public class GoodsController {
     }
 
 
+    /**
+     * 添加商品
+     * @param spuBo
+     * @return
+     */
     @PostMapping("goods")
     public ResponseEntity<Void> saveGoods(@RequestBody SpuBo spuBo){
         this.goodsService.saveGoods(spuBo);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
+    /**
+     * 根据spuId查询spuDetail(详情列表)
+     * @param spuId
+     * @return
+     */
     @GetMapping("spu/detail/{spuId}")
     public ResponseEntity<SpuDetail> querySpuDetailBySpuId(@PathVariable("spuId")Long spuId){
         SpuDetail spuDetail = this.goodsService.querySpuDetailBySpuId(spuId);
@@ -55,6 +73,11 @@ public class GoodsController {
         return ResponseEntity.ok(spuDetail);
     }
 
+    /**
+     * 查询sku列表
+     * @param spuId
+     * @return
+     */
     @GetMapping("sku/list")
     public ResponseEntity<List<Sku>> querySkusBySpuId(@RequestParam("id")Long spuId){
         List<Sku> skus = this.goodsService.querySkusBySpuId(spuId);
@@ -64,10 +87,28 @@ public class GoodsController {
         return ResponseEntity.ok(skus);
     }
 
+    /**
+     * 更新商品信息
+     * @param spuBo
+     * @return
+     */
     @PutMapping("goods")
     public ResponseEntity<Void> updateGoods(@RequestBody SpuBo spuBo){
         this.goodsService.updateGoods(spuBo);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
+
+    /**
+     *
+     * @param spuId
+     * @return
+     */
+    @GetMapping("spu/delete")
+    public ResponseEntity<Boolean> deleteGoods(@RequestParam("id")Long spuId){
+
+        boolean flag = this.goodsService.deleteGoods(spuId);
+
+        return ResponseEntity.ok(flag);
     }
 
 }

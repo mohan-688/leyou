@@ -110,6 +110,10 @@ public class GoodsService {
         saveSkuAndStock(spuBo);
     }
 
+    /**
+     * 新增sku和sku_Stock
+     * @param spuBo
+     */
     private void saveSkuAndStock(SpuBo spuBo) {
         spuBo.getSkus().forEach(sku -> {
             // 新增sku
@@ -153,6 +157,10 @@ public class GoodsService {
     }
 
 
+    /**
+     * 开启事务注解,更新商品
+     * @param spu
+     */
     @Transactional
     public void updateGoods(SpuBo spu) {
         // 查询以前sku
@@ -183,5 +191,31 @@ public class GoodsService {
 
         // 更新spu详情
         this.spuDetailMapper.updateByPrimaryKeySelective(spu.getSpuDetail());
+    }
+
+    /**
+     * 根据SpuId删除spu和spuDetail和sku
+     * @param spuId
+     * @return
+     */
+    @Transactional
+    public boolean deleteGoods(Long spuId){
+        try {
+            //删除spu
+            this.spuMapper.deleteByPrimaryKey(spuId);
+
+            //删除spuDetail
+            this.spuDetailMapper.deleteByPrimaryKey(spuId);
+
+            //删除sku
+            Sku sku = new Sku();
+            sku.setSpuId(spuId);
+            this.skuMapper.delete(sku);
+            return true;
+        }catch (Exception e){
+
+        }
+
+        return false;
     }
 }

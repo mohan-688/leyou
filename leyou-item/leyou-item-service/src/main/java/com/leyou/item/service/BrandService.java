@@ -81,17 +81,28 @@ public class BrandService {
         });
     }
 
+    /**
+     * 根据BrandId删除品牌
+     * @param id
+     * @return
+     */
+    @Transactional
     public boolean deleteBrand(Long id) {
         try {
-            int x = this.brandMapper.deleteByPrimaryKey(id);
-            int y = this.brandMapper.deleteCategoryAndBrandByBrandId(id);
+            this.brandMapper.deleteByPrimaryKey(id);
+            this.brandMapper.deleteCategoryAndBrandByBrandId(id);
+            return true;
         }catch (Exception e){
-            return false;
-        }
 
-        return true;
+        }
+        return false;
     }
 
+    /**
+     *
+     * @param cid
+     * @return
+     */
     public List<Brand> queryBrandsByCid(Long cid) {
 
         return this.brandMapper.selectBrandByCid(cid);
