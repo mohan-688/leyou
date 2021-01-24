@@ -39,4 +39,5 @@ public class SearchController {
         }
         return ResponseEntity.ok(result);
     }
+
 }

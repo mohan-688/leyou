@@ -111,4 +111,10 @@ public class BrandService {
     public Brand queryBrandById(Long id) {
         return this.brandMapper.selectByPrimaryKey(id);
     }
+
+    public Long queryBrandIdByName(String name) {
+        Brand brand = new Brand();
+        brand.setName(name);
+        return this.brandMapper.selectOne(brand).getId();
+    }
 }
