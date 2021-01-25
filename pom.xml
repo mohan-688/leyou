@@ -15,6 +15,7 @@
         <module>leyou-upload</module>
         <module>leyou-portal</module>
         <module>leyou-search</module>
+        <module>leyou-goods-web</module>
     </modules>
     <packaging>pom</packaging>
 

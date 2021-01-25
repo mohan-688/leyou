@@ -218,4 +218,13 @@ public class GoodsService {
 
         return false;
     }
+
+    /**
+     * 根据spu的id查询spu
+     * @param id
+     * @return
+     */
+    public Spu querySpuById(Long id) {
+        return this.spuMapper.selectByPrimaryKey(id);
+    }
 }
