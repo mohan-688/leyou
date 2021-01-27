@@ -200,12 +200,6 @@
                 if (this.addBtnFlag){
                     this.$validator.validate("phone").then(r => {
                         if (r) {
-
-                            leyou.http.post("/user/send", "phone=" + this.user.phone).
-                            then(resp=>{
-                                alert(resp);
-                            });
-
                             this.show=true; //发送不可用
                             this.addBtnFlag=false; //点击事件无效
                             this.numTime = 60;
@@ -223,6 +217,10 @@
                                     this.timeStr = this.numTime + "s";
                                 }
                             }, 1000);
+
+                            leyou.http.post("/user/send", "phone=" + this.user.phone).
+                            then(resp=> alert(resp));
+
                         }
                     });
                 }
@@ -237,7 +235,7 @@
                                 if (resp.status === 201) {
                                     // 注册成功
                                     alert("注册成功,即将跳转到登录页！");
-                                    setTimeout(() => window.location = '/login.html', 2000);
+                                    setTimeout(() => window.open('/login.html',"_self"), 2000);
                                 }
                             })
                             .catch(() => alert("注册失败！"))

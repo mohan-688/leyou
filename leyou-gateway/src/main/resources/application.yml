@@ -14,5 +14,20 @@ zuul:
     item-service: /item/** # 商品微服务的映射路径,符合该路径的会去找item-service对应的服务
     search-service: /search/** #搜索微服务
     user-service: /user/** #用户微服务
+    auth-service: /auth/** # 授权中心微服务
   ignored-patterns: /upload/**
   ignored-services: upload-service # 忽略upload-service服务
+  add-host-header: true
+  sensitive-headers: #禁止使用的头信息，设置为Null则不会去替换头信息
+leyou:
+  jwt:
+    pubKeyPath: C:/tmp/rsa/rsa.pub # 公钥地址
+    cookieName: LY_TOKEN # cookie的名称
+  filter:
+    allowPaths:
+      - /api/auth #集合属性,每个-是一条
+      - /api/search
+      - /api/user/register
+      - /api/user/check
+      - /api/user/send
+      - /api/item
