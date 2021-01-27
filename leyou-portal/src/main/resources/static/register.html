@@ -11,6 +11,11 @@
     <link rel="stylesheet" type="text/css" href="css/webbase.css"/>
     <link rel="stylesheet" type="text/css" href="css/pages-register.css"/>
     <style type="text/css">
+        .disabled {
+            cursor:not-allowed;
+            opacity: 0.6;
+        }
+
         .code-span {
             display: inline-block;
             border: 1px solid #999;
@@ -80,8 +85,8 @@
                     <div class="controls">
                         <input type="text" placeholder="短信验证码" class="input-xfat input-xlarge" style="width: 120px;"
                                v-model="user.code" name="code" v-validate="'required'" data-vv-as="验证码">
-                        <span class="code-span" @click="createVerifyCode">
-                               获取短信验证码
+                        <span :class="{disabled:show}" class="code-span" @click="createVerifyCode">
+                               {{timeStr}}
                         </span>
                     </div>
                     <span style="color: red;">{{ errors.first('code') }}</span>
@@ -126,6 +131,7 @@
 <script src="./js/common.js"></script>
 <script src="./js/validate.js"></script>
 <script type="text/javascript">
+
     Vue.use(VeeValidate, {
         events: 'blur',
         dictionary: {
@@ -151,7 +157,13 @@
                 confirmPassword: '',
                 phone: '',
                 code: ''
+
             },
+            time:null, // 定时器
+            timeStr:'获取验证码',
+            numTime:null,   //时间
+            show:false, //是否不可用
+            addBtnFlag:true, //点击事件是否有效
             check: {
                 username: false
             }
@@ -184,11 +196,36 @@
         },
         methods: {
             createVerifyCode() {// 生成短信验证码
-                this.$validator.validate("phone").then(r => {
-                    if (r) {
-                        leyou.http.post("/user/send", "phone=" + this.user.phone);
-                    }
-                });
+                //flag为true则执行，否则点击不执行
+                if (this.addBtnFlag){
+                    this.$validator.validate("phone").then(r => {
+                        if (r) {
+
+                            leyou.http.post("/user/send", "phone=" + this.user.phone).
+                            then(resp=>{
+                                alert(resp);
+                            });
+
+                            this.show=true; //发送不可用
+                            this.addBtnFlag=false; //点击事件无效
+                            this.numTime = 60;
+                            this.timeStr = this.numTime + "s";
+                            //倒计时
+                            this.time = setInterval(()=> {
+                                //每次减1秒
+                                this.numTime -= 1;
+                                if (this.numTime <= 0) {
+                                    clearInterval(this.time);
+                                    this.timeStr = "获取验证码";
+                                    this.show=false; //发送可用
+                                    this.addBtnFlag=true; //点击事件有效
+                                } else {
+                                    this.timeStr = this.numTime + "s";
+                                }
+                            }, 1000);
+                        }
+                    });
+                }
 
             },
             submit() {

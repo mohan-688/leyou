@@ -55,6 +55,12 @@ public class SearchService {
 
     private static final ObjectMapper MAPPER = new ObjectMapper();
 
+    /**
+     * 构建索引库
+     * @param spu
+     * @return
+     * @throws IOException
+     */
     public Goods buildGoods(Spu spu) throws IOException {
 
         // 创建goods对象
@@ -153,6 +159,10 @@ public class SearchService {
         return result;
     }
 
+
+    /**
+     * 索引库操作模块
+     */
 
     @Autowired
     private GoodsRepository goodsRepository;
@@ -384,5 +394,33 @@ public class SearchService {
             categories.add(map);
         }
         return categories;
+    }
+
+
+    /**
+     * 消息机制板块
+     */
+
+    /**
+     * 添加索引
+     * @param id
+     * @throws IOException
+     */
+    public void createIndex(Long id) throws IOException {
+
+        Spu spu = this.goodsClient.querySpuById(id);
+        // 构建商品
+        Goods goods = this.buildGoods(spu);
+
+        // 保存数据到索引库
+        this.goodsRepository.save(goods);
+    }
+
+    /**
+     * 删除索引
+     * @param id
+     */
+    public void deleteIndex(Long id) {
+        this.goodsRepository.deleteById(id);
     }
 }
