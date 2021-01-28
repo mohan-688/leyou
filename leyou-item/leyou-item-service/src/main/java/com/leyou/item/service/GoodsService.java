@@ -249,4 +249,8 @@ public class GoodsService {
         }
     }
 
+    public Sku querySkuById(Long id) {
+        return this.skuMapper.selectByPrimaryKey(id);
+    }
+
 }

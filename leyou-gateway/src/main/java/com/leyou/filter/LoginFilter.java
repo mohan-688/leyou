@@ -2,8 +2,8 @@ package com.leyou.filter;
 
 import com.leyou.auth.utils.JwtUtils;
 import com.leyou.common.utils.CookieUtils;
-import com.leyou.config.FilterProperties;
-import com.leyou.config.JwtProperties;
+import com.leyou.cart.config.FilterProperties;
+import com.leyou.cart.config.JwtProperties;
 import com.netflix.zuul.ZuulFilter;
 import com.netflix.zuul.context.RequestContext;
 import com.netflix.zuul.exception.ZuulException;
@@ -11,7 +11,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletRequest;

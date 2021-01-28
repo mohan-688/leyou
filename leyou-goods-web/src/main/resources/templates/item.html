@@ -683,7 +683,7 @@
         },
         methods: {
             addCart() {
-                ly.verify().then(res => {
+                ly.verifyUser().then(res => {
                     // 登陆状态下的购物车
                     ly.http.post("/cart", {skuId: this.sku.id, num: this.num}).then(res => {
                         window.location = "http://www.leyou.com/cart.html";
