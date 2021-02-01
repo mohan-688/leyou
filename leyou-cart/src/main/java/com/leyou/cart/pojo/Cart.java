@@ -1,11 +1,13 @@
 package com.leyou.cart.pojo;
 
+import java.io.Serializable;
+
 /**
  * @Author: MoHan
  * @Description: MoHan
  * @Date: 2021/1/28 9:48
  */
-public class Cart {
+public class Cart implements Serializable {
     private Long userId;// 用户id
     private Long skuId;// 商品id
     private String title;// 标题
@@ -13,6 +15,7 @@ public class Cart {
     private Long price;// 加入购物车时的价格
     private Integer num;// 购买数量
     private String ownSpec;// 商品规格参数
+
 
     public Long getUserId() {
         return userId;

@@ -34,19 +34,50 @@ public class CartController {
 
 
     /**
+     * 添加Buy购物车
+     *
+     * @return
+     */
+    @RequestMapping("addBuyCart")
+    public ResponseEntity<Void> addBuyCart(@RequestBody List<Cart> carts) {
+        this.cartService.addBuyCart(carts);
+        return ResponseEntity.ok().build();
+    }
+
+
+    /**
      * 查询购物车列表
      *
      * @return
      */
-    @GetMapping
-    public ResponseEntity<List<Cart>> queryCartList() {
-        List<Cart> carts = this.cartService.queryCartList();
+    @GetMapping("getCartList")
+    public ResponseEntity<List<Cart>> queryCartList(@RequestParam(value = "id",required=false)Long id) {
+        List<Cart> carts = this.cartService.queryCartList(id);
         if (carts == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         }
         return ResponseEntity.ok(carts);
     }
 
+    /**
+     * 查询Buy购物车列表
+     *
+     * @return
+     */
+    @GetMapping("getBuyCartList")
+    public ResponseEntity<List<Cart>> queryBuyCartList(@RequestParam(value = "id",required=false)Long id) {
+        List<Cart> carts = this.cartService.queryBuyCartList(id);
+        if (carts == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
+        return ResponseEntity.ok(carts);
+    }
+
+    /**
+     * 合并购物车
+     * @param carts
+     * @return
+     */
     @PostMapping("merge")
     public ResponseEntity<Boolean> mergeCarts(@RequestBody List<Cart> carts){
        Boolean flag = this.cartService.mergeCarts(carts);

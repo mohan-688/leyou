@@ -41,8 +41,8 @@ public class LoginInterceptor extends HandlerInterceptorAdapter {
         String token = CookieUtils.getCookieValue(request, "LY_TOKEN");
         if (StringUtils.isBlank(token)) {
             // 未登录,返回401
-            response.setStatus(HttpStatus.UNAUTHORIZED.value());
-            return false;
+            //response.setStatus(HttpStatus.UNAUTHORIZED.value());
+            return true;
         }
         // 有token，查询用户信息
         try {

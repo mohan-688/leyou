@@ -3,8 +3,13 @@ server:
 spring:
   application:
     name: cart-service
+  datasource:
+    url: jdbc:mysql://localhost:3306/leyou
+    username: root
+    password: mohan688
   redis:
     host: 192.168.73.3
+
 eureka:
   client:
     service-url:
@@ -14,6 +19,9 @@ eureka:
     lease-renewal-interval-in-seconds: 5
     lease-expiration-duration-in-seconds: 15
 leyou:
+  worker:
+    workerId: 1
+    datacenterId: 1
   jwt:
     pubKeyPath: C:/tmp/rsa/rsa.pub # 公钥地址
     cookieName: LY_TOKEN # cookie的名称

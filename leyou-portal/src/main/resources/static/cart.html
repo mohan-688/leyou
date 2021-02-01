@@ -270,8 +270,8 @@
         data: {
             ly,
             carts: [],// 购物车数据
-            selected:[], // 记录选中的商品
-            isAll:false //是否全选，默认不全选
+            selected: [], // 记录选中的商品
+            isAll: false //是否全选，默认不全选
         },
         created() {
             this.loadCarts();
@@ -282,23 +282,23 @@
                 ly.verifyUser().then(() => {
                     // 已登录
                     //获取本地存储的购物车
-                    let carts=ly.store.get("LY_CART");
+                    let carts = ly.store.get("LY_CART");
                     //没有则直接查询
-                    if (carts==null || carts.length==0){
-                        ly.http.get("/cart").then(({data})=>{
-                            this.carts=data;
+                    if (carts == null || carts.length == 0) {
+                        ly.http.get("/cart/getCartList").then(({data}) => {
+                            this.carts = data;
                         });
-                    }else {
+                    } else {
                         //有则将本地购物车提交到后台去
-                        ly.http.post("/cart/merge",carts).then(resp=>{
-                            if (resp){
+                        ly.http.post("/cart/merge", carts).then(resp => {
+                            if (resp) {
                                 //将本地存储购物车清空
                                 ly.store.set("LY_CART", null);
                                 //查询购物车
-                                ly.http.get("/cart").then(({data})=>{
-                                    this.carts=data;
+                                ly.http.get("/cart").then(({data}) => {
+                                    this.carts = data;
                                 })
-                            }else {
+                            } else {
                                 console.log(resp);
                             }
 
@@ -312,12 +312,12 @@
                 });
             },
             increment(cart) {
-                if (cart && cart.num>0)
-                cart.num++;
+                if (cart && cart.num > 0)
+                    cart.num++;
 
                 ly.verifyUser().then(() => {
                     // TODO 已登录，向后台发起请求
-                    ly.http.put("/cart",{skuId:cart.skuId,num:cart.num});
+                    ly.http.put("/cart", {skuId: cart.skuId, num: cart.num});
                 }).catch(() => {
                     // 未登录，直接操作本地数据
                     ly.store.set("carts", this.carts);
@@ -330,43 +330,50 @@
                 cart.num--;
                 ly.verifyUser().then(() => {
                     // TODO 已登录，向后台发起请求
-                    ly.http.put("/cart",{skuId:cart.skuId,num:cart.num});
+                    ly.http.put("/cart", {skuId: cart.skuId, num: cart.num});
                 }).catch(() => {
                     // 未登录，直接操作本地数据
                     ly.store.set("carts", this.carts);
                 })
             },
-            deleteCart(i){
-                ly.verifyUser().then(res=>{
+            deleteCart(i) {
+                ly.verifyUser().then(res => {
                     // TODO，已登录购物车
-                    ly.http.delete("/cart/"+this.carts[i].skuId).
-                        then(()=>{
-                            this.carts.splice(i,1);
+                    ly.http.delete("/cart/" + this.carts[i].skuId).then(() => {
+                        this.carts.splice(i, 1);
                     })
-                }).catch(()=>{
+                }).catch(() => {
                     // 未登录购物车
                     this.carts.splice(i, 1);
                     ly.store.set("carts", this.carts);
                 })
             },
-            allSelect(){
-                this.isAll=!this.isAll;
-                if (this.isAll){
-                    this.selected=this.carts;
-                }else {
-                    this.selected=[];
+            allSelect() {
+                this.isAll = !this.isAll;
+                if (this.isAll) {
+                    this.selected = this.carts;
+                } else {
+                    this.selected = [];
                 }
             },
-            toOrder(){
-                ly.verifyUser().then(()=>{
+            toOrder() {
+                ly.verifyUser().then(() => {
                     // 已登录
                     //保存已选购物车到本地
-                    ly.store.set("LY_selectedCarts",this.selected);
+                    //ly.store.set("LY_selectedCarts",this.selected);
                     //应该将选中的商品集合提交到后台，订单页面再到后台去获取集合
-                    window.location.href = "/getOrderInfo.html"
-                }).catch(()=>{
+                    ly.http.post("/cart/addBuyCart", this.selected)
+                        .then(async response => {
+                            await ly.http.post("/cart/order/creatOrder").then(({data}) => {
+                                window.location = "http://www.leyou.com/getOrderInfo.html?orderId="+data.orderId;
+                            })
+                        }).catch(() => {
+                        alert("提交失败！");
+                    })
+
+                }).catch(() => {
                     alert("请登录!");
-                    window.location="http://www.leyou.com/login.html?returnUrl=http://www.leyou.com/cart.html";
+                    window.location = "http://www.leyou.com/login.html?returnUrl=http://www.leyou.com/cart.html";
                 })
             }
         },

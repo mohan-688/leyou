@@ -156,7 +156,7 @@
                                             <div class="price">￥{{ly.formatPrice(cart.price * cart.num)}}</div>
                                         </li>
                                         <li class="yui3-u-1-12">
-                                            <div class="num">{{cart.num}}</div>
+                                            <div class="num">X{{cart.num}}</div>
                                         </li>
                                         <li class="yui3-u-1-12">
                                             <div class="exit">有货</div>
@@ -189,7 +189,7 @@
             <div class="static fr">
                 <div class="list">
                     <span><i class="number">{{totalNum}}</i>件商品，总商品金额</span>
-                    <em class="allprice">¥{{ly.formatPrice(totalPay)}}</em>
+                    <em class="allprice">¥{{ly.formatPrice(totalPrice)}}</em>
                 </div>
                 <div class="list">
                     <span>返现：</span>
@@ -202,7 +202,7 @@
             </div>
         </div>
         <div class="clearfix trade">
-            <div class="fc-price">应付金额:　<span class="price">¥{{ly.formatPrice(actualPay)}}</span></div>
+            <div class="fc-price">应付金额:　<span class="price">¥{{ly.formatPrice(this.totalPrice)}}</span></div>
             <div class="fc-receiverInfo">
                 寄送至:{{addresses[selectedAddress].address}}
                 收货人：{{addresses[selectedAddress].name}} {{addresses[selectedAddress].phone}}
@@ -221,6 +221,7 @@
     let orderInfoVm = new Vue({
         el: "#orderInfoApp",
         data: {
+            ly,
             addresses: [// 可选地址列表,假数据，需要从后台查询
                 {
                     name: "锋哥",// 收件人姓名
@@ -249,62 +250,68 @@
                 postFee: 0,
                 discount: 0
             },
-            carts: []
+            carts: [],
+            totalPrice: "",
+            orderId: ""
         },
         created() {
             ly.verifyUser().then(() => {
                 //已登录
-                this.carts = ly.store.get("LY_selectedCarts") || [];
+                //this.carts = ly.store.get("LY_selectedCarts") || [];
+                ly.http.get("/cart/getBuyCartList").then(async resp => {
+                    this.carts = resp.data;
+                    this.orderId = ly.getUrlParam("orderId");
+                   await ly.http.get("/order/getOrder/" + this.orderId).then(({data}) => {
+                        this.totalPrice = data.totalPay;
+                    }).catch(()=>{
+                        console.log('error');
+                    })
+                });
+
             }).catch(() => {
                 //未登录
                 window.location = "http://www.leyou.com/login.html?returnUrl=" + window.location.href;
             })
         },
-		methods: {
-			submit() {
-				// 把购物车数据处理成订单详情
-				const orderDetails = this.carts.map(({userId, ...rest}) => rest);
-				// 处理物流信息
-				const addr = this.addresses[this.selectedAddress];
-				const obj = {
-					receiver: addr.name,
-					receiverState: addr.state,
-					receiverCity: addr.city,
-					receiverAddress: addr.address,
-					receiverDistrict: addr.district,
-					receiverMobile: addr.phone,
-					receiverZip: addr.zipCode
-				};
-				// 复制到订单对象
-				Object.assign(this.order, obj, {
-					orderDetails,
-					totalPay: this.totalPay,
-					actualPay: this.actualPay,
-				});
-				// 提交订单
-				ly.http.post("/order", this.order,{
-					transformResponse:[data=>{
-						return data;
-					}]
-				}).then(({data}) => {
-					// 在线支付，需要到付款页
-					window.location = "pay.html?orderId=" + data +"&&price="+ totalPay;
-				}).catch((resp) => {
-					alert("订单提交失败，可能是缺货!")
-				})
-			}
-		},
-		computed: {
-			totalNum(){
-				return this.carts.reduce((c1, c2) => c1 + c2.num, 0)
-			},
-			totalPay(){
-				return this.carts.reduce((c1, c2) => c1 + c2.price * c2.num, 0);
-			},
-			actualPay(){
-				return this.totalPay + this.order.postFee - this.order.discount;
-			}
-		},
+        methods: {
+            submit() {
+                // 把购物车数据处理成订单详情
+                const orderDetails = this.carts.map(({userId, ...rest}) => rest);
+                // 处理物流信息
+                const addr = this.addresses[this.selectedAddress];
+                const obj = {
+                    receiver: addr.name,
+                    receiverState: addr.state,
+                    receiverCity: addr.city,
+                    receiverAddress: addr.address,
+                    receiverDistrict: addr.district,
+                    receiverMobile: addr.phone,
+                    receiverZip: addr.zipCode
+                };
+                // 复制到订单对象
+                Object.assign(this.order, obj, {
+                    orderDetails,
+                    totalPay: this.totalPay,
+                    actualPay: this.actualPay,
+                });
+                // 提交订单
+                // ly.http.post("/order", this.order, {
+                //     transformResponse: [data => {
+                //         return data;
+                //     }]
+                // }).then(({data}) => {
+                // 在线支付，需要到付款页
+                window.location = "pay.html?orderId=" + this.orderId + "&&price=" + this.totalPrice;
+                // }).catch((resp) => {
+                //     alert("订单提交失败，可能是缺货!")
+                // })
+            }
+        },
+        computed: {
+            totalNum() {
+                return 1;
+            }
+        },
         components: {
             shortcut: () => import("/js/pages/shortcut.js")
         }
